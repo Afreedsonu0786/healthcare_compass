@@ -2,7 +2,7 @@
 
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { calculateDistance } from "@/lib/distance-utils";
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 
 type HospitalInfo = {
   treatment_type: string;
@@ -39,13 +39,23 @@ const badgeColorMap: Record<string, string> = {
 };
 
 export default function HospitalCard({ hospitals, userLat, userLon }: Props) {
-  const [filteredHospitals, setFilteredHospitals] =
-    useState<HospitalInfo[]>(hospitals);
+  // Remove the state for filteredHospitals and directly use the hospitals prop
   const [selectedHospital, setSelectedHospital] = useState<HospitalInfo | null>(
     null
   );
 
-  const items = filteredHospitals.map((hospital) => {
+  // Reset selected hospital when hospitals array changes (due to filtering)
+  useEffect(() => {
+    // Only reset if selected hospital is no longer in the list
+    if (
+      selectedHospital &&
+      !hospitals.some((h) => h.hospital_id === selectedHospital.hospital_id)
+    ) {
+      setSelectedHospital(null);
+    }
+  }, [hospitals, selectedHospital]);
+
+  const items = hospitals.map((hospital, idx) => {
     const distance =
       userLat && userLon
         ? calculateDistance(
@@ -70,7 +80,7 @@ export default function HospitalCard({ hospitals, userLat, userLon }: Props) {
 
           <div className="text-sm text-gray-500">Distance: {distance} mi</div>
           <div className="text-sm text-gray-500 mb-4">
-            Average Cost: ${hospital.avg_cost.toFixed(2)}.
+            Average Cost: ${hospital.avg_cost.toFixed(2)}
           </div>
         </div>
 
@@ -100,7 +110,7 @@ export default function HospitalCard({ hospitals, userLat, userLon }: Props) {
     );
 
     return {
-      key: hospital.hospital_id,
+      key: `${hospital.hospital_id}-${idx}`,
       title: hospital.hospital_name,
       description,
       link: "#",
@@ -134,8 +144,8 @@ export default function HospitalCard({ hospitals, userLat, userLon }: Props) {
               {selectedHospital.avg_cost.toFixed(2)}
             </div>
             <div>
-              <strong>Phone Number: +1(</strong>
-              {selectedHospital.phone})
+              <strong>Phone Number: +1 </strong>
+              {selectedHospital.phone}
             </div>
           </div>
           <button

@@ -25,7 +25,7 @@ export default function AdvancedFilters({
         <select
           value={distance}
           onChange={(e) => setDistance(e.target.value)}
-          className="border border-gray-300 rounded-lg p-3 w-full shadow-sm"
+          className="border border-gray-300 rounded-lg p-3 w-full shadow-sm bg-black text-white"
         >
           <option value="any">Any Distance</option>
           <option value="5">Within 5 km</option>
